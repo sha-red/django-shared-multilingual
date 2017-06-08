@@ -102,6 +102,6 @@ class TranslatableTextField(models.TextField):
             val = self.__dict__["%s_%s" % (name, language)]
             if not val:
                 val = self.__dict__["%s_%s" % (name, settings.LANGUAGE_CODE)]
-                return val
+            return val
 
         setattr(cls, name, property(translated_value))
