@@ -28,7 +28,7 @@ setup(
     install_requires=[
         # 'Django<2',
         'python-dateutil',
-        'git+https://projects.c--y.net/erik/django-shared-utils.git#egg=shared-utils'
+        # 'git+https://projects.c--y.net/erik/django-shared-utils.git#egg=django-shared-utils'
     ],
     classifiers=[
         # 'Development Status :: 4 - Beta',
