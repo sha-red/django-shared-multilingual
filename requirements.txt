@@ -1,3 +1,0 @@
-Django<2
-python-dateutil
-git+ssh://gogs@projects.c--y.net/erik/django-shared-utils.git#egg=django_shared_utils

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import string_concat
 
-from utils.translation import get_language
+from shared.utils.translation import get_language
 
 
 class TranslatableCharField(models.CharField):

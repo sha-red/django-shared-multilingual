@@ -25,8 +25,13 @@ setup(
         exclude=['tests', 'tests.*'],
     ),
     include_package_data=True,
+    install_requires=[
+        # 'Django<2',
+        'python-dateutil',
+        'git+https://projects.c--y.net/erik/django-shared-utils.git#egg=shared-utils'
+    ],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        # 'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',

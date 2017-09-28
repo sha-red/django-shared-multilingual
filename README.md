@@ -1,3 +1,2 @@
-# django-shared-utils
+# django-shared-multilingual
 
-Mix of Python and Django utility functions, classed etc.
