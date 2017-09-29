@@ -1,0 +1,9 @@
+*.py?
+*.sw?
+*~
+.coverage
+.tox
+/*.egg-info
+build
+dist
+__pycache__

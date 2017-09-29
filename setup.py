@@ -4,6 +4,8 @@ from io import open
 import os
 from setuptools import setup, find_packages
 
+import shared.multilingual
+
 
 def read(filename):
     path = os.path.join(os.path.dirname(__file__), filename)
@@ -13,7 +15,7 @@ def read(filename):
 
 setup(
     name='django-shared-multilingual',
-    version=__import__('multilingual').__version__,
+    version=shared.multilingual.__version__,
     description=' Collection Django tools for multilingual websites.',
     long_description=read('README.md'),
     author='Erik Stein',
@@ -24,6 +26,7 @@ setup(
     packages=find_packages(
         exclude=['tests', 'tests.*'],
     ),
+    namespace_packages=['shared'],
     include_package_data=True,
     install_requires=[
         # 'Django<2',
