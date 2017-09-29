@@ -34,7 +34,7 @@ setup(
         'django-shared-utils',
     ],
     dependency_links=[
-        'git+ssh://gogs@projects.c--y.net/erik/django-shared-utils.git#egg=django-shared-utils',
+        'git+https://github.com/sha-red/django-shared-utils.git#egg=django-shared-utils',
     ],
     classifiers=[
         # 'Development Status :: 4 - Beta',
