@@ -117,7 +117,6 @@ class TranslatableJSONField(JSONField):
         super().__init__(verbose_name, **kwargs)
 
     def contribute_to_class(self, cls, name, private_only=False):
-        print(self, cls)
         for lang_code, lang_name in settings.LANGUAGES:
             if lang_code == settings.LANGUAGE_CODE:
                 _blank = self._blank
