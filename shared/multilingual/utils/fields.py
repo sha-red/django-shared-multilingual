@@ -9,106 +9,36 @@ from django.utils.translation import string_concat
 from shared.utils.translation import get_language, lang_suffix
 
 
-class TranslatableCharField(models.CharField):
-
-    def __init__(self, verbose_name=None, **kwargs):
-        self._blank = kwargs.get("blank", False)
-        self._editable = kwargs.get("editable", True)
-
-        super(TranslatableCharField, self).__init__(verbose_name, **kwargs)
-
-    def contribute_to_class(self, cls, name, private_only=False):
-        for lang_code, lang_name in settings.LANGUAGES:
-            if lang_code == settings.LANGUAGE_CODE:
-                _blank = self._blank
-            else:
-                _blank = True
-
-            localized_field = models.CharField(
-                string_concat(self.verbose_name, " (%s)" % lang_code),
-                name=self.name,
-                primary_key=self.primary_key,
-                max_length=self.max_length,
-                unique=self.unique,
-                blank=_blank,
-                null=False,  # intentionally ignored
-                db_index=self.db_index,
-                rel=self.rel,
-                default=self.default or "",
-                editable=self._editable,
-                serialize=self.serialize,
-                choices=self.choices,
-                help_text=self.help_text,
-                db_column=None,
-                db_tablespace=self.db_tablespace
-            )
-
-            localized_field.contribute_to_class(
-                cls,
-                "%s%s" % (name, lang_suffix(lang_code)),
-            )
-
-        def translated_value(self):
-            # For empty / non-existing translation fall back to main field
-            language = get_language()
-            val = self.__dict__["%s%s" % (name, lang_suffix(language))]
-            if not val:
-                val = self.__dict__["%s%s" % (name, lang_suffix(settings.LANGUAGE_CODE))]
-            return val
-
-        setattr(cls, name, property(translated_value))
+def get_translated_value(name):
+    def translated_value(obj):
+        language = get_language()
+        val = obj.__dict__["%s%s" % (name, lang_suffix(language))]
+        if not val:
+            val = obj.__dict__["%s%s" % (name, lang_suffix(settings.LANGUAGE_CODE))]
+        return val
+    return translated_value
 
 
-class TranslatableTextField(models.TextField):
+class TranslatableFieldMixin:
+    """
+    Make a Field subclass translatable, i.e. it automatically provides field duplicates
+    for each language defined in settings.LANGUAGES.
 
-    def __init__(self, verbose_name=None, **kwargs):
-        self._blank = kwargs.get("blank", False)
-        self._editable = kwargs.get("editable", True)
+    Parameters:
+        base_class
+            optional, is None first base class which is a subclass of Django's Field class is used
+        extra_parameter_names
+            optional, attributes of the original field to be copied to the localized fields
 
-        super(TranslatableTextField, self).__init__(verbose_name, **kwargs)
+    Usage:
 
-    def contribute_to_class(self, cls, name, private_only=False):
-        for lang_code, lang_name in settings.LANGUAGES:
-            if lang_code == settings.LANGUAGE_CODE:
-                _blank = self._blank
-            else:
-                _blank = True
+        class TranslatableRichTextField(TranslatableFieldMixin, RichTextField):
+            base_class = RichTextField
+            extra_parameter_names = ['config_name', 'extra_plugins', 'external_plugin_resources']
+    """
 
-            localized_field = models.TextField(
-                string_concat(self.verbose_name, " (%s)" % lang_code),
-                name=self.name,
-                primary_key=self.primary_key,
-                max_length=self.max_length,
-                unique=self.unique,
-                blank=_blank,
-                null=False,  # intentionally ignored
-                db_index=self.db_index,
-                rel=self.rel,
-                default=self.default or "",
-                editable=self._editable,
-                serialize=self.serialize,
-                choices=self.choices,
-                help_text=self.help_text,
-                db_column=None,
-                db_tablespace=self.db_tablespace
-            )
-
-            localized_field.contribute_to_class(
-                cls,
-                "%s%s" % (name, lang_suffix(lang_code)),
-            )
-
-        def translated_value(self):
-            language = get_language()
-            val = self.__dict__["%s%s" % (name, lang_suffix(language))]
-            if not val:
-                val = self.__dict__["%s%s" % (name, lang_suffix(settings.LANGUAGE_CODE))]
-            return val
-
-        setattr(cls, name, property(translated_value))
-
-
-class TranslatableJSONField(JSONField):
+    base_class = None
+    extra_parameter_names = []
 
     def __init__(self, verbose_name=None, **kwargs):
         self._blank = kwargs.get("blank", False)
@@ -123,24 +53,36 @@ class TranslatableJSONField(JSONField):
             else:
                 _blank = True
 
-            localized_field = JSONField(
+            params = {
+                'blank': _blank,
+                'choices': self.choices,
+                'db_column': None,
+                'db_index': self.db_index,
+                'db_tablespace': self.db_tablespace,
+                'default': self.default or "",
+                'editable': self._editable,
+                'help_text': self.help_text,
+                'max_length': self.max_length,
+                'name': self.name,
+                'null': False,  # intentionally ignored
+                'primary_key': self.primary_key,
+                'rel': self.rel,
+                'serialize': self.serialize,
+                'unique': self.unique,
+            }
+
+            for n in self.extra_parameter_names:
+                params[n] = getattr(self, n, None)
+
+            # TODO Move this logic to a meta class?
+            if not self.base_class:
+                # Get first base class which is a subclass of Django's Field
+                self.base_class = [f for f in self.__class__.__bases__
+                    if issubclass(f, models.Field)][0]
+
+            localized_field = self.base_class(
                 string_concat(self.verbose_name, " (%s)" % lang_code),
-                name=self.name,
-                primary_key=self.primary_key,
-                max_length=self.max_length,
-                unique=self.unique,
-                blank=_blank,
-                null=False,  # intentionally ignored
-                db_index=self.db_index,
-                rel=self.rel,
-                default=self.default or "",
-                editable=self._editable,
-                serialize=self.serialize,
-                choices=self.choices,
-                help_text=self.help_text,
-                db_column=None,
-                db_tablespace=self.db_tablespace,
-                encoder=self.encoder
+                **params
             )
 
             localized_field.contribute_to_class(
@@ -148,11 +90,18 @@ class TranslatableJSONField(JSONField):
                 "%s%s" % (name, lang_suffix(lang_code)),
             )
 
-        def translated_value(self):
-            language = get_language()
-            val = self.__dict__["%s%s" % (name, lang_suffix(language))]
-            if not val:
-                val = self.__dict__["%s%s" % (name, lang_suffix(settings.LANGUAGE_CODE))]
-            return val
+        setattr(cls, name, property(get_translated_value(name)))
 
-        setattr(cls, name, property(translated_value))
+
+class TranslatableCharField(TranslatableFieldMixin, models.CharField):
+    pass
+
+
+class TranslatableTextField(TranslatableFieldMixin, models.TextField):
+    pass
+
+
+class TranslatableJSONField(TranslatableFieldMixin, JSONField):
+    extra_parameter_names = ['encoder']
+
+
