@@ -12,9 +12,10 @@ from shared.utils.translation import get_language, lang_suffix
 def get_translated_value(name):
     def translated_value(obj):
         language = get_language()
-        val = obj.__dict__["%s%s" % (name, lang_suffix(language))]
+        val = obj.__dict__[lang_suffix(language, name)]
+        # FIXME Try all available languages, not only the default one
         if not val:
-            val = obj.__dict__["%s%s" % (name, lang_suffix(settings.LANGUAGE_CODE))]
+            val = obj.__dict__[lang_suffix(settings.LANGUAGE_CODE, name)]
         return val
     return translated_value
 
