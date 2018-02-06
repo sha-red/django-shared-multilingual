@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django import forms
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -9,13 +10,17 @@ from django.utils.translation import string_concat
 from shared.utils.translation import get_language, lang_suffix
 
 
-def get_translated_value(name):
+def get_translated_value(fieldname):
     def translated_value(obj):
         language = get_language()
-        val = obj.__dict__[lang_suffix(language, name)]
-        # FIXME Try all available languages, not only the default one
+        val = obj.__dict__[lang_suffix(language, fieldname)]
         if not val:
-            val = obj.__dict__[lang_suffix(settings.LANGUAGE_CODE, name)]
+            other_languages = list(dict(settings.LANGUAGES).keys())
+            other_languages.remove(language)
+            for lang in other_languages:
+                val = obj.__dict__[lang_suffix(lang, fieldname)]
+                if val:
+                    break
         return val
     return translated_value
 
@@ -39,6 +44,7 @@ class TranslatableFieldMixin:
     """
 
     base_class = None
+    formfield_class = forms.fields.CharField
     extra_parameter_names = []
 
     def __init__(self, verbose_name=None, **kwargs):
@@ -93,13 +99,28 @@ class TranslatableFieldMixin:
 
         setattr(cls, name, property(get_translated_value(name)))
 
+    def formfield(self, **kwargs):
+        defaults = {
+            'form_class': self.formfield_class,
+        }
+        defaults.update(kwargs)
+        return super(TranslatableFieldMixin, self).formfield(**defaults)
+
 
 class TranslatableCharField(TranslatableFieldMixin, models.CharField):
     pass
 
 
-class TranslatableTextField(TranslatableFieldMixin, models.TextField):
+class TranslatableFormField(forms.fields.CharField):
+    # def __init__(self, *args, **kwargs):
+        # kwargs.update({'widget': CKEditorWidget(config_name=config_name, extra_plugins=extra_plugins,
+                                                # external_plugin_resources=external_plugin_resources)})
+        # super(RichTextFormField, self).__init__(*args, **kwargs)
     pass
+
+
+class TranslatableTextField(TranslatableFieldMixin, models.TextField):
+    formfield_class = forms.fields.CharField
 
 
 class TranslatableJSONField(TranslatableFieldMixin, JSONField):
