@@ -81,6 +81,9 @@ class TranslatableFieldMixin:
             for n in self.extra_parameter_names:
                 params[n] = getattr(self, n, None)
 
+            if self.db_column:
+                params['db_column'] = lang_suffix(lang_code, self.db_column)
+
             # TODO Move this logic to a meta class?
             if not self.base_class:
                 # Get first base class which is a subclass of Django's Field
