@@ -114,6 +114,10 @@ class TranslatableCharField(TranslatableFieldMixin, models.CharField):
     pass
 
 
+class TranslatableSlugField(TranslatableFieldMixin, models.SlugField):
+    pass
+
+
 class TranslatableFormField(forms.fields.CharField):
     # def __init__(self, *args, **kwargs):
         # kwargs.update({'widget': CKEditorWidget(config_name=config_name, extra_plugins=extra_plugins,
