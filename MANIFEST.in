@@ -1,5 +1,5 @@
 include AUTHORS
 include LICENSE
 include README.md
-# recursive-include shared/multilingual/templates *
-
+recursive-include shared/multilingual/static *
+recursive-include shared/multilingual/templates *
