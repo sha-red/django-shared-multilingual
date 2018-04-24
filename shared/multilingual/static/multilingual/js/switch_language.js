@@ -7,7 +7,6 @@ function showLanguages(languages) {
                 var l = cls.split('_').pop();
                 if (l.length == 2 || l.length == 3) {
                     // TODO Quick fix; better use "lang" attribute
-                    console.log(l, ['id', 'url'].indexOf(l) > -1);
                     if (['id', 'url'].indexOf(l) == -1) {
                         lang.push(l);
                     }
