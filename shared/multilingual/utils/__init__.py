@@ -1,11 +1,9 @@
-# Erik Stein <code@classlibrary.net>, 2017
-
 from functools import reduce, partial
 
 from collections import OrderedDict
 from django.conf import settings
 
-from shared.utils.translation import lang_suffix
+from shared.utils.translation import get_language, lang_suffix
 
 
 def i18n_fields(field_name, languages=None):
