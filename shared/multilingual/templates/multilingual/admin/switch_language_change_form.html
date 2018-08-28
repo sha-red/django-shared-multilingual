@@ -1,0 +1,8 @@
+{% extends "admin/change_form.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<div class="language-switcher">
+	{% include "multilingual/admin/switch_language.html" %}
+</div>
+{% endblock %}

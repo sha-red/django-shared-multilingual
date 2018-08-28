@@ -6,8 +6,9 @@ function showLanguages(languages) {
             if (cls) {
                 var l = cls.split('_').pop();
                 if (l.length == 2 || l.length == 3) {
+                    // TODO Currently this filters out *all* fields which have a _ suffix, e.g. template_key
                     // TODO Quick fix; better use "lang" attribute
-                    if (['id', 'url'].indexOf(l) == -1) {
+                    if (['de', 'en', 'rom'].indexOf(l) > -1) {
                         lang.push(l);
                     }
                 }

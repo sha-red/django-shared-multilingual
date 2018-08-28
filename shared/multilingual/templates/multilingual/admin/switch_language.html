@@ -1,24 +1,24 @@
 {% load i18n %}
 
-    <style>
-        .language-switch .selected { background-color: #417690 }
-        .language-switch.end-group { margin-right: 1em; }
-    </style>
+	<style>
+		ul.language-switcher { padding: 14px 40px; float: right; }
+		a.selected { background-color: #417690 !important; }
+	</style>
 
 {% get_available_languages as languages %}
-
-    <li class="language-switch">
-        <a class="language-select" href="#" data-languages="{% for lang_code, _ in languages %}{{ lang_code }}{% if not forloop.last %} {% endif %}{% endfor %}">
-            {% trans 'All' %}
-        </a>
-    </li>
-
-{% for lang_code, lang_name in languages %}
-    <li class="language-switch{% if forloop.last %} end-group{% endif %}">
-        <a class="language-select{% if request.LANGUAGE_CODE == lang_code %} selected{% endif %}"
-           href="#"
-           data-languages="{{ lang_code }}">
-        {{ lang_name }}
-        </a>
-    </li>
-{% endfor %}
+	<ul class="object-tools language-switcher">
+		<li>
+			<a class="language-select" href="#" data-languages="{% for lang_code, _ in languages %}{{lang_code}}{% if not forloop.last %} {% endif %}{% endfor %}">
+				{% trans 'All' %}
+			</a>
+		</li>
+	{% for lang_code, lang_name in languages %}
+		<li>
+			<a class="language-select{% if request.LANGUAGE_CODE == lang_code %} selected{% endif %}"
+			   href="#"
+			   data-languages="{{lang_code}}">
+			{{ lang_name }}
+			</a>
+		</li>
+	{% endfor %}
+	</ul>
