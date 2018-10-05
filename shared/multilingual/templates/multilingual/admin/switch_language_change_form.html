@@ -1,8 +1,21 @@
 {% extends "admin/change_form.html" %}
 
+
 {% block breadcrumbs %}
-{{ block.super }}
-<div class="language-switcher">
-	{% include "multilingual/admin/switch_language.html" %}
-</div>
+	{{ block.super }}
+	{% if not is_popup %}
+	<div class="language-switcher">
+		{% include "multilingual/admin/switch_language.html" %}
+	</div>
+	{% endif %}
+{% endblock %}
+
+
+{% block object-tools %}
+	{% if is_popup %}
+		<div class="language-switcher">
+			{% include "multilingual/admin/switch_language.html" %}
+		</div>
+	{% endif %}
+	{{ block.super }}
 {% endblock %}
