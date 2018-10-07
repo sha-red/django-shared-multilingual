@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.utils.translation import string_concat
+from django.utils.text import format_lazy
 
 from shared.utils.translation import get_language, lang_suffix
 
@@ -73,7 +73,7 @@ class TranslatableFieldMixin:
                 'name': self.name,
                 'null': False,  # intentionally ignored
                 'primary_key': self.primary_key,
-                'rel': self.rel,
+                'rel': self.remote_field,
                 'serialize': self.serialize,
                 'unique': self.unique,
             }
@@ -91,7 +91,7 @@ class TranslatableFieldMixin:
                     if issubclass(f, models.Field)][0]
 
             localized_field = self.base_class(
-                string_concat(self.verbose_name, " (%s)" % lang_code),
+                format_lazy("{} ({})", self.verbose_name, lang_code),
                 **params
             )
 
