@@ -5,6 +5,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import NOT_PROVIDED
 from django.utils.text import format_lazy
 
 from shared.utils.translation import get_language, lang_suffix
@@ -66,7 +67,7 @@ class TranslatableFieldMixin:
                 'db_column': None,
                 'db_index': self.db_index,
                 'db_tablespace': self.db_tablespace,
-                'default': self.default or "",
+                'default': self.default,
                 'editable': self._editable,
                 'help_text': self.help_text,
                 'max_length': self.max_length,
@@ -77,6 +78,10 @@ class TranslatableFieldMixin:
                 'serialize': self.serialize,
                 'unique': self.unique,
             }
+
+            # Because we never allow NULL set empty string as default
+            if params['default'] == NOT_PROVIDED:
+                params['default'] = ''
 
             for n in self.extra_parameter_names:
                 params[n] = getattr(self, n, None)
