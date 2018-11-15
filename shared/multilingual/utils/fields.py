@@ -79,6 +79,9 @@ class TranslatableFieldMixin:
                 'unique': self.unique,
             }
 
+            # TODO If null=False/blank=False add validator which checks that at
+            #      least one field has a value
+
             # Because we never allow NULL set empty string as default
             if params['default'] == NOT_PROVIDED:
                 params['default'] = ''

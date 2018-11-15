@@ -26,3 +26,12 @@ def i18n_fields_list(field_names, languages=None):
     """
     f = partial(i18n_fields, languages=languages)
     return reduce(lambda x, y: x + y, map(f, field_names))
+
+
+# TODO Not functional
+# def i18n_ordering(*field_list):
+#     def dynamic_i18n_ordering(*args, **kwargs):
+#         lang = get_language()
+#         return [lang_suffix(lang, f) for f in field_list]
+#     return dynamic_i18n_ordering
+
