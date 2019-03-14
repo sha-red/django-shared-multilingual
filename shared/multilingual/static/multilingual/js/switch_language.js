@@ -1,27 +1,24 @@
-// TODO Add lang attribute to form fields, use lang attribute to query fields
+
 function showLanguages(languages) {
-    document.querySelectorAll('.form-row, .field-box').forEach(function(row) {
-        var lang = [];
-        row.classList.forEach(function(cls) {
-            if (cls) {
-                var l = cls.split('_').pop();
-                if (l.length == 2 || l.length == 3) {
-                    // TODO Currently this filters out *all* fields which have a _ suffix, e.g. template_key
-                    // TODO Quick fix; better use "lang" attribute
-                    if (['de', 'en', 'rom'].indexOf(l) > -1) {
-                        lang.push(l);
-                    }
-                }
-            }
-        });
-        if (lang.length) {
-            var display = 'none';
-            if (lang.filter(function(l) { return languages.includes(l); }).length > 0) {
-                display = 'block'
-            }
-            row.style.display = display;
+    // Query all input[type=text] and textarea elements which have
+    // a lang attribute; hide all but those in the languages parameter
+
+    document.querySelectorAll(
+        'input[lang][type="text"]:not([lang=""]), textarea[lang]:not([lang=""])'
+    ).forEach( function(widget) {
+        var display = 'none';
+        if ( languages.includes(widget.attributes['lang'].value) ) {
+            display = 'block'
+        }
+        // Hide direct parent (.field-box) if there are multiple field per row,
+        // hide the row if there is only field in it
+        if ( widget.parentElement.classList.contains(".field-box") ) {
+            widget.parentElement.style.display = display
+        } else {
+            widget.parentElement.parentElement.style.display = display
         }
     })
+
     localStorage.admin_languages = languages.join(' ')
     document.querySelectorAll('.language-select').forEach(function(a) {
         if (a.dataset.languages == localStorage.admin_languages) {

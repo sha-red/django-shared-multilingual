@@ -46,7 +46,7 @@ def read(filename):
 setup(
     name='django-shared-multilingual',
     version=get_version('shared/multilingual'),
-    description=' Collection Django tools for multilingual websites.',
+    description=' Collection of Django tools for multilingual websites.',
     long_description=read('README.md'),
     author='Erik Stein',
     author_email='erik@classlibrary.net',

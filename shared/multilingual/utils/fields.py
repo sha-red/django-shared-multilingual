@@ -45,7 +45,6 @@ class TranslatableFieldMixin:
     """
 
     base_class = None
-    formfield_class = forms.fields.CharField
     extra_parameter_names = []
 
     def __init__(self, verbose_name=None, **kwargs):
@@ -98,7 +97,17 @@ class TranslatableFieldMixin:
                 self.base_class = [f for f in self.__class__.__bases__
                     if issubclass(f, models.Field)][0]
 
-            localized_field = self.base_class(
+            class LocalizedFieldClass(self.base_class):
+                lang = lang_code
+
+                def formfield(self, **kwargs):
+                    formfield = super().formfield(**kwargs)
+                    formfield.widget.attrs.update({
+                        'lang': self.lang,
+                    })
+                    return formfield
+
+            localized_field = LocalizedFieldClass(
                 format_lazy("{} ({})", self.verbose_name, lang_code),
                 **params
             )
@@ -110,13 +119,6 @@ class TranslatableFieldMixin:
 
         setattr(cls, name, property(get_translated_value(name)))
 
-    def formfield(self, **kwargs):
-        defaults = {
-            'form_class': self.formfield_class,
-        }
-        defaults.update(kwargs)
-        return super(TranslatableFieldMixin, self).formfield(**defaults)
-
 
 class TranslatableCharField(TranslatableFieldMixin, models.CharField):
     pass
@@ -126,16 +128,13 @@ class TranslatableSlugField(TranslatableFieldMixin, models.SlugField):
     pass
 
 
+# TODO TranslatableFormField not used, remove?
 class TranslatableFormField(forms.fields.CharField):
-    # def __init__(self, *args, **kwargs):
-        # kwargs.update({'widget': CKEditorWidget(config_name=config_name, extra_plugins=extra_plugins,
-                                                # external_plugin_resources=external_plugin_resources)})
-        # super(RichTextFormField, self).__init__(*args, **kwargs)
     pass
 
 
 class TranslatableTextField(TranslatableFieldMixin, models.TextField):
-    formfield_class = forms.fields.CharField
+    pass
 
 
 class TranslatableJSONField(TranslatableFieldMixin, JSONField):
