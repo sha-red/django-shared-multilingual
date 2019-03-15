@@ -99,6 +99,14 @@ class TranslatableFieldMixin:
 
             class LocalizedFieldClass(self.base_class):
                 lang = lang_code
+                base_class = self.base_class
+
+                def deconstruct(self):
+                    # Return the path of the base_class, making this dynamic
+                    # subclass transparent to migrations
+                    name, path, args, kwargs = super().deconstruct()
+                    path = self.base_class().deconstruct()[1]
+                    return name, path, args, kwargs
 
                 def formfield(self, **kwargs):
                     formfield = super().formfield(**kwargs)
