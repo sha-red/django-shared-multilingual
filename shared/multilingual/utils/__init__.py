@@ -1,9 +1,9 @@
+from collections import OrderedDict
 from functools import reduce, partial
 
-from collections import OrderedDict
 from django.conf import settings
 
-from shared.utils.translation import get_language, lang_suffix
+from shared.utils.translation import lang_suffix
 
 
 def i18n_fields(field_name, languages=None):
@@ -26,6 +26,14 @@ def i18n_fields_list(field_names, languages=None):
     """
     f = partial(i18n_fields, languages=languages)
     return reduce(lambda x, y: x + y, map(f, field_names))
+
+
+def i18n_mainlang(field_name):
+    """
+    Returns the field name with the language code for the
+    setting's main language appended.
+    """
+    return lang_suffix(settings.LANGUAGE_CODE, field_name=field_name)
 
 
 # TODO Not functional

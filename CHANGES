@@ -1,5 +1,6 @@
 0.2.5 2019-03-15
 - Hide dynamic localized field class from migrations/serializations.
+- i18n_mainlang function
 
 0.2.4 2019-03-14
 - Add 'lang'-attribute to translated form fields and use this in switch_language.js
