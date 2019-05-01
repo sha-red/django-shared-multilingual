@@ -1,3 +1,6 @@
+0.2.6 2019-04-30
+- Template tags.
+
 0.2.5 2019-03-15
 - Hide dynamic localized field class from migrations/serializations.
 - i18n_mainlang function
